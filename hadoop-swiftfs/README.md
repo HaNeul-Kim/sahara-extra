@@ -24,11 +24,11 @@ java.lang.StackOverflowError
 
 위처럼 수정했더니 0바이트 파일이 directory 로 나오는 버그 발생함
 
-isDirectory() 삭제 후 Store 에서 listDirectory 부분에서 directory 체크 부분에 headerNamr 이 Content-Type 이고 value 가 application/directory 인지 체크 추가함
+isDirectory() 삭제 후 Store 에서 listDirectory 부분에서 directory 체크 부분에 headerName 이 Content-Type 이고 value 가 application/directory 인지 체크 추가함
 
 file 은 Content-Type 이 application/octet-stream 등등..
 
-swift 의 directory 조회시 하위 모든 object 의 metadata 를 가져오는데 너무 오래 걸림(733개 file이 있는 directory 조회시 10분 이상)
+swift 의 directory 조회시 하위 모든 object 의 metadata 를 가져오는데 너무 오래 걸림(733개 file 이 있는 directory 조회시 10분 이상)
 
 모든 object 에 head request 를 보내는 부분이 있는데 이 부분을 수정해주면 directory 조회속도 향상 가능
 
