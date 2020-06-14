@@ -201,6 +201,41 @@ public class SwiftNativeFileSystemStore {
    * Get the metadata of an object
    *
    * @param path path
+   * @param status SwiftObjectFileStatus from listDirectory
+   * @return file metadata. -or null if no headers were received back from the server.
+   * @throws IOException           on a problem
+   * @throws FileNotFoundException if there is nothing at the end
+   */
+  public SwiftFileStatus getObjectMetadata(Path path, SwiftObjectFileStatus status) throws IOException {
+    SwiftObjectPath objectPath = toObjectPath(path);
+    // remove trailing slash because FileStatus must not include that
+    Path statusPath = path;
+    if (statusPath.toUri().toString().endsWith("/")) {
+      String pathUri = statusPath.toUri().toString();
+      if (pathUri.length() > 1)
+        statusPath = new Path(pathUri.substring(0, pathUri.length() - 1));
+    }
+
+    boolean isDir = SwiftProtocolConstants.HEADER_APPLICATION_DIRECTORY.equals(status.getContent_type());
+    long length = status.getBytes();
+    long lastModified = status.getLast_modified() == null ? System.currentTimeMillis() : status.getLast_modified().getTime();
+    if (objectPath.toString().endsWith("/")) {
+      isDir = true;
+    }
+
+    Path correctSwiftPath = getCorrectSwiftPath(statusPath);
+    return new SwiftFileStatus(length,
+        isDir,
+        1,
+        getBlocksize(),
+        lastModified,
+        correctSwiftPath);
+  }
+
+  /**
+   * Get the metadata of an object
+   *
+   * @param path path
    * @param newest flag to say "set the newest header", otherwise take any entry
    * @return file metadata. -or null if no headers were received back from the server.
    * @throws IOException           on a problem
@@ -247,8 +282,10 @@ public class SwiftNativeFileSystemStore {
     for (Header header : headers) {
       String headerName = header.getName();
       if (headerName.equals(SwiftProtocolConstants.X_CONTAINER_OBJECT_COUNT) ||
-              headerName.equals(SwiftProtocolConstants.X_CONTAINER_BYTES_USED)) {
-        length = 0;
+          headerName.equals(SwiftProtocolConstants.X_CONTAINER_BYTES_USED) ||
+          (headerName.equals(SwiftProtocolConstants.HEADER_CONTENT_TYPE) &&
+              SwiftProtocolConstants.HEADER_APPLICATION_DIRECTORY.equals(header.getValue()))) {
+        // length = 0;
         isDir = true;
       }
       if (SwiftProtocolConstants.HEADER_CONTENT_LENGTH.equals(headerName)) {
@@ -556,7 +593,7 @@ public class SwiftNativeFileSystemStore {
 
       if (!name.endsWith("/")) {
         final Path filePath = getCorrectSwiftPath(new Path(name));
-        files.add(getObjectMetadata(filePath, newest));
+        files.add(getObjectMetadata(filePath, status));
         prevObjName = name;
       } else {
         if (prevObjName.length() + 1 == name.length() &&
@@ -565,7 +602,7 @@ public class SwiftNativeFileSystemStore {
           continue;
         }
         final Path dirPath = getCorrectSwiftPath(toDirPath(new Path(name)));
-        files.add(getObjectMetadata(dirPath, newest));
+        files.add(getObjectMetadata(dirPath, status));
       }
     }
 

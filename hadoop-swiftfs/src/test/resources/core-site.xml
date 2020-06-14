@@ -45,7 +45,9 @@
     # add the property test.fs.swift.name to point to a swift filesystem URL
     # Add the credentials for the service you are testing against
     -->
+    <!--<include xmlns="http://www.w3.org/2001/XInclude"
+             href="auth-keys.xml"/>-->
     <include xmlns="http://www.w3.org/2001/XInclude"
-             href="auth-keys.xml"/>
+             href="core-site-swift.xml"/>
 
 </configuration>

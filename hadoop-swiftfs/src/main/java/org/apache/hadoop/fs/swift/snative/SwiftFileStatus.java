@@ -83,14 +83,6 @@ public class SwiftFileStatus extends FileStatus {
     return !isDir();
   }
 
-  /**
-   * Directory test
-   * @return true if the file is considered to be a directory
-   */
-  public boolean isDirectory() {
-    return isDir();
-  }
-
   public boolean isDLO() {
     return dloPrefix != null;
   }

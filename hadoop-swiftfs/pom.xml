@@ -19,7 +19,7 @@
 
     <groupId>org.apache.hadoop</groupId>
     <artifactId>hadoop-openstack</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.1.3.0.1.0-187-sahara-extra</version>
     <name>Apache Hadoop OpenStack support</name>
     <description>
         This module contains code to support integration with OpenStack.
@@ -72,12 +72,19 @@
       <id>hadoop3</id>
       <properties>
         <hadoop.artifactid>hadoop-common</hadoop.artifactid>
-        <hadoop.version>3.0.1</hadoop.version>
+        <hadoop.version>3.1.1.3.0.1.0-187</hadoop.version>
         <targetJavaVersion>1.8</targetJavaVersion>
         <sourceJavaVersion>1.8</sourceJavaVersion>
       </properties>
     </profile>
   </profiles>
+
+  <repositories>
+    <repository>
+      <id>Hortonworks Repository</id>
+      <url>https://repo.hortonworks.com/content/repositories/releases/</url>
+    </repository>
+  </repositories>
 
   <build>
     <plugins>
@@ -128,6 +135,13 @@
   </build>
 
   <dependencies>
+    <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.3</version>
+      <scope>test</scope>
+    </dependency>
 
 
       <dependency>
